@@ -4,6 +4,13 @@ import { FiArrowRight, FiPlay, FiChevronDown } from "react-icons/fi";
 import UserLayout from "@/layouts/UserLayout";
 import { Button } from "@/components/common/Button";
 import heroImage from "@/assets/hero-mountains.jpg";
+import FeaturedPackages from "@/components/home/FeaturedPackages";
+import WhyChooseUs from "@/components/home/WhyChooseUs";
+import PopularDestinations from "@/components/home/PopularDestinations";
+import UpcomingEvents from "@/components/home/UpcomingEvents";
+import Testimonials from "@/components/home/Testimonials";
+import GalleryPreview from "@/components/home/GalleryPreview";
+import NewsletterCTA from "@/components/home/NewsletterCTA";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -129,15 +136,13 @@ function Home() {
         </svg>
       </section>
 
-      <section className="container-tp py-24 text-center">
-        <h2 className="font-display text-3xl font-bold text-foreground md:text-4xl">
-          Phase 1 complete — foundation is live
-        </h2>
-        <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
-          Theme, fonts, folder structure, routing, navbar, footer, loader and scroll components are
-          in place. Confirm to continue with Phase 2: the full Home page.
-        </p>
-      </section>
+      <FeaturedPackages />
+      <WhyChooseUs />
+      <PopularDestinations />
+      <UpcomingEvents />
+      <Testimonials />
+      <GalleryPreview />
+      <NewsletterCTA />
     </UserLayout>
   );
 }
