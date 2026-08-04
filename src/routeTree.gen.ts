@@ -22,6 +22,8 @@ import { Route as RegisterRouteImport } from './routes/register'
 import { Route as ReviewsRouteImport } from './routes/reviews'
 import { Route as StoreRouteImport } from './routes/store'
 import { Route as WishlistRouteImport } from './routes/wishlist'
+import { Route as PackagesIndexRouteImport } from './routes/packages.index'
+import { Route as PackagesPackageIdRouteImport } from './routes/packages.$packageId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -88,6 +90,16 @@ const WishlistRoute = WishlistRouteImport.update({
   path: '/wishlist',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PackagesIndexRoute = PackagesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => PackagesRoute,
+} as any)
+const PackagesPackageIdRoute = PackagesPackageIdRouteImport.update({
+  id: '/$packageId',
+  path: '/$packageId',
+  getParentRoute: () => PackagesRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -97,12 +109,14 @@ export interface FileRoutesByFullPath {
   '/events': typeof EventsRoute
   '/gallery': typeof GalleryRoute
   '/login': typeof LoginRoute
-  '/packages': typeof PackagesRoute
+  '/packages': typeof PackagesRouteWithChildren
   '/profile': typeof ProfileRoute
   '/register': typeof RegisterRoute
   '/reviews': typeof ReviewsRoute
   '/store': typeof StoreRoute
   '/wishlist': typeof WishlistRoute
+  '/packages/$packageId': typeof PackagesPackageIdRoute
+  '/packages/': typeof PackagesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -112,12 +126,13 @@ export interface FileRoutesByTo {
   '/events': typeof EventsRoute
   '/gallery': typeof GalleryRoute
   '/login': typeof LoginRoute
-  '/packages': typeof PackagesRoute
   '/profile': typeof ProfileRoute
   '/register': typeof RegisterRoute
   '/reviews': typeof ReviewsRoute
   '/store': typeof StoreRoute
   '/wishlist': typeof WishlistRoute
+  '/packages/$packageId': typeof PackagesPackageIdRoute
+  '/packages': typeof PackagesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -128,12 +143,14 @@ export interface FileRoutesById {
   '/events': typeof EventsRoute
   '/gallery': typeof GalleryRoute
   '/login': typeof LoginRoute
-  '/packages': typeof PackagesRoute
+  '/packages': typeof PackagesRouteWithChildren
   '/profile': typeof ProfileRoute
   '/register': typeof RegisterRoute
   '/reviews': typeof ReviewsRoute
   '/store': typeof StoreRoute
   '/wishlist': typeof WishlistRoute
+  '/packages/$packageId': typeof PackagesPackageIdRoute
+  '/packages/': typeof PackagesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -151,6 +168,8 @@ export interface FileRouteTypes {
     | '/reviews'
     | '/store'
     | '/wishlist'
+    | '/packages/$packageId'
+    | '/packages/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -160,12 +179,13 @@ export interface FileRouteTypes {
     | '/events'
     | '/gallery'
     | '/login'
-    | '/packages'
     | '/profile'
     | '/register'
     | '/reviews'
     | '/store'
     | '/wishlist'
+    | '/packages/$packageId'
+    | '/packages'
   id:
     | '__root__'
     | '/'
@@ -181,6 +201,8 @@ export interface FileRouteTypes {
     | '/reviews'
     | '/store'
     | '/wishlist'
+    | '/packages/$packageId'
+    | '/packages/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -191,7 +213,7 @@ export interface RootRouteChildren {
   EventsRoute: typeof EventsRoute
   GalleryRoute: typeof GalleryRoute
   LoginRoute: typeof LoginRoute
-  PackagesRoute: typeof PackagesRoute
+  PackagesRoute: typeof PackagesRouteWithChildren
   ProfileRoute: typeof ProfileRoute
   RegisterRoute: typeof RegisterRoute
   ReviewsRoute: typeof ReviewsRoute
@@ -292,8 +314,36 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WishlistRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/packages/': {
+      id: '/packages/'
+      path: '/'
+      fullPath: '/packages/'
+      preLoaderRoute: typeof PackagesIndexRouteImport
+      parentRoute: typeof PackagesRoute
+    }
+    '/packages/$packageId': {
+      id: '/packages/$packageId'
+      path: '/$packageId'
+      fullPath: '/packages/$packageId'
+      preLoaderRoute: typeof PackagesPackageIdRouteImport
+      parentRoute: typeof PackagesRoute
+    }
   }
 }
+
+interface PackagesRouteChildren {
+  PackagesPackageIdRoute: typeof PackagesPackageIdRoute
+  PackagesIndexRoute: typeof PackagesIndexRoute
+}
+
+const PackagesRouteChildren: PackagesRouteChildren = {
+  PackagesPackageIdRoute: PackagesPackageIdRoute,
+  PackagesIndexRoute: PackagesIndexRoute,
+}
+
+const PackagesRouteWithChildren = PackagesRoute._addFileChildren(
+  PackagesRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -303,7 +353,7 @@ const rootRouteChildren: RootRouteChildren = {
   EventsRoute: EventsRoute,
   GalleryRoute: GalleryRoute,
   LoginRoute: LoginRoute,
-  PackagesRoute: PackagesRoute,
+  PackagesRoute: PackagesRouteWithChildren,
   ProfileRoute: ProfileRoute,
   RegisterRoute: RegisterRoute,
   ReviewsRoute: ReviewsRoute,
@@ -313,13 +363,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

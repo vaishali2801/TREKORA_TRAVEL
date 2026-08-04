@@ -15,12 +15,12 @@ import { toast } from "sonner";
 import UserLayout from "@/layouts/UserLayout";
 import { Button } from "@/components/common/Button";
 import PackageCard from "@/components/PackageCard";
-import { ALL_PACKAGES } from "@/data/packages";
+import { ALL_PACKAGES, type PackageDetail } from "@/data/packages";
 
 const inr = (n: number) => `₹${n.toLocaleString("en-IN")}`;
 
 export const Route = createFileRoute("/packages/$packageId")({
-  loader: ({ params }) => {
+  loader: ({ params }): { pkg: PackageDetail } => {
     const pkg = ALL_PACKAGES.find((p) => p._id === params.packageId);
     if (!pkg) throw notFound();
     return { pkg };
@@ -72,7 +72,7 @@ function PackageNotFound() {
 const TABS = ["Overview", "Itinerary", "Inclusions", "Gallery"] as const;
 
 function PackageDetailPage() {
-  const { pkg } = Route.useLoaderData();
+  const { pkg } = Route.useLoaderData() as { pkg: PackageDetail };
   const [tab, setTab] = useState<(typeof TABS)[number]>("Overview");
 
   const related = ALL_PACKAGES.filter((p) => p._id !== pkg._id).slice(0, 3);
