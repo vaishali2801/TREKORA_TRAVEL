@@ -4,8 +4,8 @@ import { cn } from "@/lib/utils";
 
 export type TextFieldProps = React.InputHTMLAttributes<HTMLInputElement> & {
   label: string;
-  icon?: React.ReactNode;
-  error?: string;
+  error?: string | undefined;
+  icon?: React.ReactNode | undefined;
 };
 
 /** Labelled input with optional leading icon, password reveal and error text. */
