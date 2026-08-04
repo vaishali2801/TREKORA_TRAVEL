@@ -57,7 +57,7 @@ export default function PackageCard({ pkg }: { pkg: PackageLike }) {
               ) : null}
             </p>
           </div>
-          <Link to="/packages">
+          <Link to="/packages/$packageId" params={{ packageId: pkg._id }}>
             <Button size="sm">Details</Button>
           </Link>
         </div>
