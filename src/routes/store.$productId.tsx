@@ -46,7 +46,7 @@ export const Route = createFileRoute("/store/$productId")({
 });
 
 function ProductPage() {
-  const { product } = Route.useLoaderData();
+  const { product } = Route.useLoaderData() as { product: GearProduct };
   const { addItem } = useCart();
   const rentable = typeof product.rentPerDay === "number";
   const [mode, setMode] = useState<"buy" | "rent">("buy");
