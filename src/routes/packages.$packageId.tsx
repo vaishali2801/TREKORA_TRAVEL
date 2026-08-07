@@ -223,12 +223,9 @@ function PackageDetailPage() {
           </div>
 
           <div className="mt-6 space-y-3">
-            <Button
-              className="w-full"
-              onClick={() => toast.info("Booking flow arrives in Phase 5.")}
-            >
-              Book this trip
-            </Button>
+            <Link to="/booking/$packageId" params={{ packageId: pkg._id }} className="block">
+              <Button className="w-full">Book this trip</Button>
+            </Link>
             <Button
               variant="outline"
               className="w-full"
