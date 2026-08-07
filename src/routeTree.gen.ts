@@ -22,6 +22,7 @@ import { Route as RegisterRouteImport } from './routes/register'
 import { Route as ReviewsRouteImport } from './routes/reviews'
 import { Route as StoreRouteImport } from './routes/store'
 import { Route as WishlistRouteImport } from './routes/wishlist'
+import { Route as BookingPackageIdRouteImport } from './routes/booking.$packageId'
 import { Route as PackagesIndexRouteImport } from './routes/packages.index'
 import { Route as PackagesPackageIdRouteImport } from './routes/packages.$packageId'
 
@@ -90,6 +91,11 @@ const WishlistRoute = WishlistRouteImport.update({
   path: '/wishlist',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BookingPackageIdRoute = BookingPackageIdRouteImport.update({
+  id: '/booking/$packageId',
+  path: '/booking/$packageId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PackagesIndexRoute = PackagesIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -115,6 +121,7 @@ export interface FileRoutesByFullPath {
   '/reviews': typeof ReviewsRoute
   '/store': typeof StoreRoute
   '/wishlist': typeof WishlistRoute
+  '/booking/$packageId': typeof BookingPackageIdRoute
   '/packages/$packageId': typeof PackagesPackageIdRoute
   '/packages/': typeof PackagesIndexRoute
 }
@@ -131,6 +138,7 @@ export interface FileRoutesByTo {
   '/reviews': typeof ReviewsRoute
   '/store': typeof StoreRoute
   '/wishlist': typeof WishlistRoute
+  '/booking/$packageId': typeof BookingPackageIdRoute
   '/packages/$packageId': typeof PackagesPackageIdRoute
   '/packages': typeof PackagesIndexRoute
 }
@@ -149,6 +157,7 @@ export interface FileRoutesById {
   '/reviews': typeof ReviewsRoute
   '/store': typeof StoreRoute
   '/wishlist': typeof WishlistRoute
+  '/booking/$packageId': typeof BookingPackageIdRoute
   '/packages/$packageId': typeof PackagesPackageIdRoute
   '/packages/': typeof PackagesIndexRoute
 }
@@ -168,6 +177,7 @@ export interface FileRouteTypes {
     | '/reviews'
     | '/store'
     | '/wishlist'
+    | '/booking/$packageId'
     | '/packages/$packageId'
     | '/packages/'
   fileRoutesByTo: FileRoutesByTo
@@ -184,6 +194,7 @@ export interface FileRouteTypes {
     | '/reviews'
     | '/store'
     | '/wishlist'
+    | '/booking/$packageId'
     | '/packages/$packageId'
     | '/packages'
   id:
@@ -201,6 +212,7 @@ export interface FileRouteTypes {
     | '/reviews'
     | '/store'
     | '/wishlist'
+    | '/booking/$packageId'
     | '/packages/$packageId'
     | '/packages/'
   fileRoutesById: FileRoutesById
@@ -219,6 +231,7 @@ export interface RootRouteChildren {
   ReviewsRoute: typeof ReviewsRoute
   StoreRoute: typeof StoreRoute
   WishlistRoute: typeof WishlistRoute
+  BookingPackageIdRoute: typeof BookingPackageIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -314,6 +327,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WishlistRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/booking/$packageId': {
+      id: '/booking/$packageId'
+      path: '/booking/$packageId'
+      fullPath: '/booking/$packageId'
+      preLoaderRoute: typeof BookingPackageIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/packages/': {
       id: '/packages/'
       path: '/'
@@ -359,6 +379,7 @@ const rootRouteChildren: RootRouteChildren = {
   ReviewsRoute: ReviewsRoute,
   StoreRoute: StoreRoute,
   WishlistRoute: WishlistRoute,
+  BookingPackageIdRoute: BookingPackageIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
