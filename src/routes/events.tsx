@@ -6,7 +6,7 @@ import { FiCalendar, FiClock, FiMapPin, FiUsers, FiX, FiUser } from "react-icons
 import UserLayout from "@/layouts/UserLayout";
 import SectionHeading from "@/components/home/SectionHeading";
 import { Button } from "@/components/common/Button";
-import TextField from "@/components/common/TextField";
+import { TextField } from "@/components/common/TextField";
 import { EVENTS, EVENT_CATEGORIES, type EventItem } from "@/data/events";
 import { fadeUp, staggerContainer } from "@/utils/motion";
 
