@@ -226,7 +226,7 @@ function EmptyState() {
   );
 }
 
-function SettingsForm({ name, email }: { name?: string; email?: string }) {
+function SettingsForm({ name, email }: { name?: string | undefined; email?: string | undefined }) {
   const [form, setForm] = useState({ name: name ?? "", email: email ?? "", phone: "", city: "" });
 
   return (
