@@ -208,11 +208,11 @@ function EventsPage() {
 
 function RegisterModal({ event, onClose }: { event: EventItem; onClose: () => void }) {
   const [form, setForm] = useState({ name: "", email: "", seats: "1" });
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<{ name?: string; email?: string; seats?: string }>({});
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    const next: Record<string, string> = {};
+    const next: { name?: string; email?: string; seats?: string } = {};
     if (!form.name.trim()) next.name = "Enter your full name";
     if (!/^\S+@\S+\.\S+$/.test(form.email)) next.email = "Enter a valid email";
     const seats = Number(form.seats);
