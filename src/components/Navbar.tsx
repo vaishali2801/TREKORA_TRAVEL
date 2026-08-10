@@ -14,6 +14,7 @@ import {
 } from "react-icons/fi";
 import { cn } from "@/lib/utils";
 import { useCart } from "@/context/CartContext";
+import { useWishlist } from "@/context/WishlistContext";
 import { useTheme } from "@/context/ThemeContext";
 import { useAuth } from "@/context/AuthContext";
 
@@ -37,6 +38,7 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
   const { count } = useCart();
+  const { count: wishlistCount } = useWishlist();
   const { theme, toggleTheme } = useTheme();
   const { isAuthenticated, user } = useAuth();
 
@@ -131,9 +133,14 @@ export default function Navbar() {
           <Link
             to="/wishlist"
             aria-label="Wishlist"
-            className={cn("hidden rounded-full p-2.5 transition-colors hover:bg-muted sm:block", linkTone)}
+            className={cn("relative hidden rounded-full p-2.5 transition-colors hover:bg-muted sm:block", linkTone)}
           >
             <FiHeart size={18} />
+            {wishlistCount > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-secondary px-1 text-[10px] font-bold text-secondary-foreground">
+                {wishlistCount}
+              </span>
+            )}
           </Link>
           <Link
             to="/cart"

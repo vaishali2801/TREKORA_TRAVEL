@@ -1,12 +1,29 @@
 import { Link } from "@tanstack/react-router";
-import { FiClock, FiMapPin, FiStar, FiTrendingUp } from "react-icons/fi";
+import { toast } from "sonner";
+import { FiClock, FiHeart, FiMapPin, FiStar, FiTrendingUp } from "react-icons/fi";
 import type { PackageLike } from "@/data/home";
 import { Button } from "@/components/common/Button";
+import { useWishlist } from "@/context/WishlistContext";
 
 const inr = (n: number) => `₹${n.toLocaleString("en-IN")}`;
 
 /** Reusable tour package card used on the home page and listings. */
 export default function PackageCard({ pkg }: { pkg: PackageLike }) {
+  const { has, toggle } = useWishlist();
+  const saved = has(pkg._id);
+
+  const onWishlist = () => {
+    const nowSaved = toggle({
+      id: pkg._id,
+      kind: "package",
+      name: pkg.title,
+      image: pkg.image,
+      price: pkg.price,
+      meta: pkg.destination,
+    });
+    toast.success(nowSaved ? "Saved to wishlist" : "Removed from wishlist");
+  };
+
   return (
     <article className="card-lift group flex h-full flex-col overflow-hidden rounded-3xl bg-card shadow-card">
       <div className="relative aspect-[4/3] overflow-hidden">
@@ -23,10 +40,22 @@ export default function PackageCard({ pkg }: { pkg: PackageLike }) {
             {pkg.tag}
           </span>
         ) : null}
-        <span className="glass-dark absolute top-4 right-4 flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold text-primary-foreground">
-          <FiStar className="text-accent" /> {pkg.rating}
-        </span>
+        <div className="absolute top-4 right-4 flex items-center gap-2">
+          <button
+            type="button"
+            onClick={onWishlist}
+            aria-label={saved ? `Remove ${pkg.title} from wishlist` : `Save ${pkg.title} to wishlist`}
+            aria-pressed={saved}
+            className="glass-dark rounded-full p-2 text-primary-foreground transition hover:scale-110"
+          >
+            <FiHeart className={saved ? "fill-current text-accent" : ""} size={14} />
+          </button>
+          <span className="glass-dark flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold text-primary-foreground">
+            <FiStar className="text-accent" /> {pkg.rating}
+          </span>
+        </div>
       </div>
+
 
       <div className="flex flex-1 flex-col p-6">
         <p className="flex items-center gap-1.5 text-xs font-medium tracking-wide text-secondary uppercase">

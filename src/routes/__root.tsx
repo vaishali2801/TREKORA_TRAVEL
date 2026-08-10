@@ -14,6 +14,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AuthProvider } from "@/context/AuthContext";
 import { CartProvider } from "@/context/CartContext";
+import { WishlistProvider } from "@/context/WishlistContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import ScrollToTop from "@/components/ScrollToTop";
 
@@ -130,10 +131,12 @@ function RootComponent() {
       <ThemeProvider>
         <AuthProvider>
           <CartProvider>
-            <ScrollToTop />
-            {/* Required: nested routes render here. */}
-            <Outlet />
-            <Toaster position="top-right" richColors closeButton />
+            <WishlistProvider>
+              <ScrollToTop />
+              {/* Required: nested routes render here. */}
+              <Outlet />
+              <Toaster position="top-right" richColors closeButton />
+            </WishlistProvider>
           </CartProvider>
         </AuthProvider>
       </ThemeProvider>
