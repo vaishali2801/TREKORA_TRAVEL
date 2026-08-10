@@ -131,9 +131,14 @@ export default function Navbar() {
           <Link
             to="/wishlist"
             aria-label="Wishlist"
-            className={cn("hidden rounded-full p-2.5 transition-colors hover:bg-muted sm:block", linkTone)}
+            className={cn("relative hidden rounded-full p-2.5 transition-colors hover:bg-muted sm:block", linkTone)}
           >
             <FiHeart size={18} />
+            {wishlistCount > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-secondary px-1 text-[10px] font-bold text-secondary-foreground">
+                {wishlistCount}
+              </span>
+            )}
           </Link>
           <Link
             to="/cart"
