@@ -130,10 +130,12 @@ function RootComponent() {
       <ThemeProvider>
         <AuthProvider>
           <CartProvider>
-            <ScrollToTop />
-            {/* Required: nested routes render here. */}
-            <Outlet />
-            <Toaster position="top-right" richColors closeButton />
+            <WishlistProvider>
+              <ScrollToTop />
+              {/* Required: nested routes render here. */}
+              <Outlet />
+              <Toaster position="top-right" richColors closeButton />
+            </WishlistProvider>
           </CartProvider>
         </AuthProvider>
       </ThemeProvider>
