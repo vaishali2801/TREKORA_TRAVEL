@@ -10,6 +10,8 @@ const inr = (n: number) => `₹${n.toLocaleString("en-IN")}`;
 /** Product card for the gear store grid. */
 export default function GearCard({ product, mode }: { product: GearProduct; mode: "buy" | "rent" }) {
   const { addItem } = useCart();
+  const { has, toggle } = useWishlist();
+  const saved = has(product._id);
   const rentable = typeof product.rentPerDay === "number";
   const effectiveMode: "buy" | "rent" = mode === "rent" && rentable ? "rent" : "buy";
   const price = effectiveMode === "rent" ? product.rentPerDay! : product.price;
