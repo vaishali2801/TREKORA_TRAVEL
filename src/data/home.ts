@@ -9,12 +9,12 @@ export type PackageLike = {
   destination: string;
   duration: string;
   price: number;
-  oldPrice?: number;
+  oldPrice?: number | undefined;
   rating: number;
   reviews: number;
   difficulty: "Easy" | "Moderate" | "Challenging";
   image: string;
-  tag?: string;
+  tag?: string | undefined;
 };
 
 /** Fallback content shown until the REST API returns data. */

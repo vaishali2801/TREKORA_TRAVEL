@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import {
   FiCalendar,
@@ -15,19 +16,30 @@ import { toast } from "sonner";
 import UserLayout from "@/layouts/UserLayout";
 import { Button } from "@/components/common/Button";
 import PackageCard from "@/components/PackageCard";
-import { ALL_PACKAGES, type PackageDetail } from "@/data/packages";
+import { packageService, type FrontendPackage } from "@/services/api";
+import { ALL_PACKAGES } from "@/data/packages";
 
 const inr = (n: number) => `₹${n.toLocaleString("en-IN")}`;
 
 export const Route = createFileRoute("/packages/$packageId")({
-  loader: ({ params }): { pkg: PackageDetail } => {
-    const pkg = ALL_PACKAGES.find((p) => p._id === params.packageId);
-    if (!pkg) throw notFound();
-    return { pkg };
+  loader: async ({ params }): Promise<{ pkg: FrontendPackage }> => {
+    try {
+      const fetched = await packageService.detail(params.packageId);
+      return { pkg: fetched };
+    } catch {
+      const pkg = ALL_PACKAGES.find((p) => p._id === params.packageId);
+      if (!pkg) throw notFound();
+      return { pkg: pkg as unknown as FrontendPackage };
+    }
   },
   head: ({ loaderData }) => {
     if (!loaderData) {
-      return { meta: [{ title: "Package unavailable — TrekVista" }, { name: "robots", content: "noindex" }] };
+      return {
+        meta: [
+          { title: "Package unavailable — TrekVista" },
+          { name: "robots", content: "noindex" },
+        ],
+      };
     }
     const { pkg } = loaderData;
     return {
@@ -72,10 +84,32 @@ function PackageNotFound() {
 const TABS = ["Overview", "Itinerary", "Inclusions", "Gallery"] as const;
 
 function PackageDetailPage() {
-  const { pkg } = Route.useLoaderData() as { pkg: PackageDetail };
+  const { pkg } = Route.useLoaderData() as { pkg: FrontendPackage };
   const [tab, setTab] = useState<(typeof TABS)[number]>("Overview");
 
-  const related = ALL_PACKAGES.filter((p) => p._id !== pkg._id).slice(0, 3);
+  const itinerary: FrontendPackage["itinerary"] =
+    pkg.itinerary.length > 0
+      ? pkg.itinerary
+      : Array.from({ length: Math.max(pkg.days, 1) }, (_, i) => ({
+          day: i + 1,
+          title:
+            i === 0
+              ? "Arrival & trip briefing"
+              : i === pkg.days - 1
+                ? "Wrap-up & departure"
+                : `Day ${i + 1} — explore ${pkg.destination}`,
+          description: pkg.overview || "A day of exploration and adventure with our expert guides.",
+        }));
+
+  const gallery = pkg.gallery.length > 0 ? pkg.gallery : pkg.images;
+
+  const { data: related } = useQuery({
+    queryKey: ["packages", "related", pkg._id],
+    queryFn: () => packageService.list({ limit: 4 }),
+    retry: false,
+  });
+
+  const relatedList = (related ?? ALL_PACKAGES).filter((p) => p._id !== pkg._id).slice(0, 3);
 
   return (
     <UserLayout>
@@ -90,7 +124,9 @@ function PackageDetailPage() {
                   {pkg.tag}
                 </span>
               ) : null}
-              <h1 className="mt-3 font-display text-3xl font-bold text-white md:text-5xl">{pkg.title}</h1>
+              <h1 className="mt-3 font-display text-3xl font-bold text-white md:text-5xl">
+                {pkg.title}
+              </h1>
               <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-white/85">
                 <span className="flex items-center gap-1.5">
                   <FiMapPin /> {pkg.destination}
@@ -129,14 +165,24 @@ function PackageDetailPage() {
             ))}
           </div>
 
-          <motion.div key={tab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="pt-8">
+          <motion.div
+            key={tab}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="pt-8"
+          >
             {tab === "Overview" ? (
               <div>
                 <p className="text-base leading-relaxed text-muted-foreground">{pkg.overview}</p>
-                <h2 className="mt-8 font-heading text-xl font-semibold text-foreground">Trip highlights</h2>
+                <h2 className="mt-8 font-heading text-xl font-semibold text-foreground">
+                  Trip highlights
+                </h2>
                 <ul className="mt-4 grid gap-3 sm:grid-cols-2">
                   {pkg.highlights.map((h) => (
-                    <li key={h} className="flex items-start gap-3 rounded-2xl bg-muted/60 p-4 text-sm text-foreground">
+                    <li
+                      key={h}
+                      className="flex items-start gap-3 rounded-2xl bg-muted/60 p-4 text-sm text-foreground"
+                    >
                       <FiCheck className="mt-0.5 shrink-0 text-secondary" /> {h}
                     </li>
                   ))}
@@ -151,13 +197,17 @@ function PackageDetailPage() {
 
             {tab === "Itinerary" ? (
               <ol className="relative space-y-6 border-l border-border pl-6">
-                {pkg.itinerary.map((d) => (
+                {itinerary.map((d) => (
                   <li key={d.day} className="relative">
                     <span className="absolute -left-[31px] flex h-6 w-6 items-center justify-center rounded-full bg-primary text-[11px] font-bold text-primary-foreground">
                       {d.day}
                     </span>
-                    <h3 className="font-heading text-base font-semibold text-foreground">{d.title}</h3>
-                    <p className="mt-1 text-sm text-muted-foreground">{d.detail}</p>
+                    <h3 className="font-heading text-base font-semibold text-foreground">
+                      {d.title}
+                    </h3>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      {d.description ?? d.detail ?? ""}
+                    </p>
                   </li>
                 ))}
               </ol>
@@ -166,7 +216,9 @@ function PackageDetailPage() {
             {tab === "Inclusions" ? (
               <div className="grid gap-8 sm:grid-cols-2">
                 <div>
-                  <h3 className="font-heading text-base font-semibold text-foreground">What's included</h3>
+                  <h3 className="font-heading text-base font-semibold text-foreground">
+                    What's included
+                  </h3>
                   <ul className="mt-4 space-y-3">
                     {pkg.inclusions.map((i) => (
                       <li key={i} className="flex items-start gap-3 text-sm text-muted-foreground">
@@ -176,7 +228,9 @@ function PackageDetailPage() {
                   </ul>
                 </div>
                 <div>
-                  <h3 className="font-heading text-base font-semibold text-foreground">Not included</h3>
+                  <h3 className="font-heading text-base font-semibold text-foreground">
+                    Not included
+                  </h3>
                   <ul className="mt-4 space-y-3">
                     {pkg.exclusions.map((i) => (
                       <li key={i} className="flex items-start gap-3 text-sm text-muted-foreground">
@@ -190,7 +244,7 @@ function PackageDetailPage() {
 
             {tab === "Gallery" ? (
               <div className="grid gap-4 sm:grid-cols-2">
-                {pkg.gallery.map((src, i) => (
+                {gallery.map((src, i) => (
                   <img
                     key={`${src}-${i}`}
                     src={src}
@@ -241,7 +295,7 @@ function PackageDetailPage() {
         <div className="mx-auto max-w-7xl px-6">
           <h2 className="font-display text-2xl font-bold text-foreground">You may also like</h2>
           <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {related.map((p) => (
+            {relatedList.map((p) => (
               <PackageCard key={p._id} pkg={p} />
             ))}
           </div>

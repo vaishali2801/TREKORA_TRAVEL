@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
-import { FiLock, FiMail, FiUser, FiUserPlus } from "react-icons/fi";
+import { FiLock, FiMail, FiPhone, FiUser, FiUserPlus } from "react-icons/fi";
 import AuthShell from "@/components/auth/AuthShell";
 import { TextField } from "@/components/common/TextField";
 import { Button } from "@/components/common/Button";
@@ -26,7 +26,7 @@ export const Route = createFileRoute("/register")({
   component: RegisterPage,
 });
 
-type Field = "name" | "email" | "password" | "confirm";
+type Field = "name" | "email" | "phone" | "password" | "confirm";
 type Errors = Partial<Record<Field, string>>;
 
 const STRENGTH = ["Too short", "Weak", "Fair", "Strong", "Excellent"] as const;
@@ -50,7 +50,7 @@ function scorePassword(pw: string) {
 function RegisterPage() {
   const navigate = useNavigate();
   const { register } = useAuth();
-  const [form, setForm] = useState({ name: "", email: "", password: "", confirm: "" });
+  const [form, setForm] = useState({ name: "", email: "", phone: "", password: "", confirm: "" });
   const [accepted, setAccepted] = useState(false);
   const [errors, setErrors] = useState<Errors>({});
   const [submitting, setSubmitting] = useState(false);
@@ -66,6 +66,7 @@ function RegisterPage() {
     const next: Errors = {};
     if (form.name.trim().length < 2) next.name = "Please enter your full name.";
     if (!/^\S+@\S+\.\S+$/.test(form.email)) next.email = "Enter a valid email address.";
+    if (!/^[0-9]{10}$/.test(form.phone)) next.phone = "Enter a valid 10-digit mobile number.";
     if (form.password.length < 6) next.password = "Use at least 6 characters.";
     if (form.confirm !== form.password) next.confirm = "Passwords do not match.";
     setErrors(next);
@@ -81,7 +82,7 @@ function RegisterPage() {
     }
     setSubmitting(true);
     try {
-      const user = await register(form.name.trim(), form.email, form.password);
+      const user = await register(form.name.trim(), form.email, form.password, form.phone.trim());
       toast.success(`Account created — welcome, ${user?.name ?? form.name}!`);
       navigate({ to: "/" });
     } catch (err) {
@@ -123,6 +124,17 @@ function RegisterPage() {
           value={form.email}
           onChange={set("email")}
           error={errors.email}
+        />
+        <TextField
+          label="Mobile number"
+          type="tel"
+          autoComplete="tel"
+          inputMode="numeric"
+          placeholder="98765 43210"
+          icon={<FiPhone size={16} />}
+          value={form.phone}
+          onChange={set("phone")}
+          error={errors.phone}
         />
         <div>
           <TextField

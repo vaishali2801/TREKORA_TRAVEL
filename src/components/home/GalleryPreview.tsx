@@ -1,12 +1,26 @@
+import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
+import { galleryService } from "@/services/api";
 import { GALLERY_PREVIEW } from "@/data/home";
 import SectionHeading from "./SectionHeading";
 import { Button } from "@/components/common/Button";
 import { fadeUp, staggerContainer } from "@/utils/motion";
 
-/** Small photo grid teasing the full gallery page. */
+/** Small photo grid teasing the full gallery page — API driven with demo fallback. */
 export default function GalleryPreview() {
+  const { data } = useQuery({
+    queryKey: ["gallery", "preview"],
+    queryFn: () => galleryService.list(),
+    retry: 0,
+    staleTime: 60_000,
+  });
+
+  const photos: string[] =
+    Array.isArray(data) && data.length
+      ? data.slice(0, 7).map((g) => g.src)
+      : GALLERY_PREVIEW;
+
   return (
     <section className="bg-muted/50 py-24">
       <div className="container-tp">
@@ -23,7 +37,7 @@ export default function GalleryPreview() {
           viewport={{ once: true, amount: 0.15 }}
           className="mt-12 grid grid-cols-2 gap-4 lg:grid-cols-4"
         >
-          {GALLERY_PREVIEW.map((src, i) => (
+          {photos.map((src, i) => (
             <motion.div
               key={src}
               variants={fadeUp}

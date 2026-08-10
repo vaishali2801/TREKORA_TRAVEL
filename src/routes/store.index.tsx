@@ -9,8 +9,8 @@ import StoreFilters, {
   DEFAULT_GEAR_FILTERS,
   type GearFilters,
 } from "@/components/store/StoreFilters";
-import { GEAR_PRODUCTS, type GearProduct } from "@/data/gear";
-import { productService } from "@/services/api";
+import { GEAR_PRODUCTS } from "@/data/gear";
+import { productService, type FrontendProduct } from "@/services/api";
 
 export const Route = createFileRoute("/store/")({
   head: () => ({
@@ -38,15 +38,16 @@ function StorePage() {
 
   const { data } = useQuery({
     queryKey: ["products"],
-    queryFn: () => productService.list() as Promise<GearProduct[]>,
+    queryFn: () => productService.list() as Promise<FrontendProduct[]>,
     retry: false,
   });
 
-  const products = Array.isArray(data) && data.length ? data : GEAR_PRODUCTS;
+  const products: FrontendProduct[] =
+    data && data.length ? data : (GEAR_PRODUCTS as unknown as FrontendProduct[]);
 
   const results = useMemo(() => {
     const q = filters.q.trim().toLowerCase();
-    const list = products.filter((p) => {
+    const list = products.filter((p: FrontendProduct) => {
       const price = filters.mode === "rent" ? (p.rentPerDay ?? Infinity) : p.price;
       if (filters.mode === "rent" && typeof p.rentPerDay !== "number") return false;
       if (filters.category !== "all" && p.category !== filters.category) return false;
@@ -55,7 +56,8 @@ function StorePage() {
       return true;
     });
 
-    const priceOf = (p: GearProduct) => (filters.mode === "rent" ? (p.rentPerDay ?? 0) : p.price);
+    const priceOf = (p: FrontendProduct) =>
+      (filters.mode === "rent" ? (p.rentPerDay ?? 0) : p.price);
     return [...list].sort((a, b) => {
       if (filters.sort === "price-asc") return priceOf(a) - priceOf(b);
       if (filters.sort === "price-desc") return priceOf(b) - priceOf(a);

@@ -5,9 +5,12 @@ import { motion } from "framer-motion";
 import { FiCompass } from "react-icons/fi";
 import UserLayout from "@/layouts/UserLayout";
 import PackageCard from "@/components/PackageCard";
-import PackageFilters, { DEFAULT_FILTERS, type Filters } from "@/components/packages/PackageFilters";
+import PackageFilters, {
+  DEFAULT_FILTERS,
+  type Filters,
+} from "@/components/packages/PackageFilters";
 import { ALL_PACKAGES, type PackageDetail } from "@/data/packages";
-import { packageService } from "@/services/api";
+import { packageService, type FrontendPackage } from "@/services/api";
 
 export const Route = createFileRoute("/packages/")({
   head: () => ({
@@ -35,11 +38,12 @@ function PackagesPage() {
 
   const { data } = useQuery({
     queryKey: ["packages"],
-    queryFn: () => packageService.list() as Promise<PackageDetail[]>,
+    queryFn: () => packageService.list() as Promise<FrontendPackage[]>,
     retry: false,
   });
 
-  const source: PackageDetail[] = Array.isArray(data) && data.length ? data : ALL_PACKAGES;
+  const source: FrontendPackage[] =
+    Array.isArray(data) && data.length ? data : (ALL_PACKAGES as unknown as FrontendPackage[]);
 
   const results = useMemo(() => {
     const q = filters.q.trim().toLowerCase();
@@ -106,7 +110,9 @@ function PackagesPage() {
 
           {results.length === 0 ? (
             <div className="rounded-3xl border border-dashed border-border p-14 text-center">
-              <p className="font-heading text-lg font-semibold text-foreground">No matching trips</p>
+              <p className="font-heading text-lg font-semibold text-foreground">
+                No matching trips
+              </p>
               <p className="mt-2 text-sm text-muted-foreground">
                 Try widening your budget or clearing the destination filter.
               </p>

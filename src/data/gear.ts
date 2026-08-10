@@ -6,12 +6,12 @@ export type GearProduct = {
   image: string;
   gallery: string[];
   price: number;
-  oldPrice?: number;
-  rentPerDay?: number;
+  oldPrice?: number | undefined;
+  rentPerDay?: number | undefined;
   rating: number;
   reviews: number;
   stock: number;
-  tag?: string;
+  tag?: string | undefined;
   weight: string;
   shortDescription: string;
   description: string;

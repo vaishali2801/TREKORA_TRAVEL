@@ -18,7 +18,7 @@ import { toast } from "sonner";
 import UserLayout from "@/layouts/UserLayout";
 import { Button } from "@/components/common/Button";
 import { TextField } from "@/components/common/TextField";
-import { ALL_PACKAGES, type PackageDetail } from "@/data/packages";
+import { ALL_PACKAGES } from "@/data/packages";
 import { useAuth } from "@/context/AuthContext";
 import {
   ADD_ONS,
@@ -27,15 +27,20 @@ import {
   saveBooking,
   type BookingTraveller,
 } from "@/lib/bookings";
-import { bookingService } from "@/services/api";
+import { bookingService, packageService, type FrontendPackage } from "@/services/api";
 
 const inr = (n: number) => `₹${n.toLocaleString("en-IN")}`;
 
 export const Route = createFileRoute("/booking/$packageId")({
-  loader: ({ params }): { pkg: PackageDetail } => {
-    const pkg = ALL_PACKAGES.find((p) => p._id === params.packageId);
-    if (!pkg) throw notFound();
-    return { pkg };
+  loader: async ({ params }): Promise<{ pkg: FrontendPackage }> => {
+    try {
+      const fetched = await packageService.detail(params.packageId);
+      return { pkg: fetched };
+    } catch {
+      const pkg = ALL_PACKAGES.find((p) => p._id === params.packageId);
+      if (!pkg) throw notFound();
+      return { pkg: pkg as unknown as FrontendPackage };
+    }
   },
   head: ({ loaderData }) => {
     if (!loaderData) {
@@ -82,7 +87,7 @@ function BookingNotFound() {
 const STEPS = ["Trip details", "Travellers", "Payment", "Confirmed"] as const;
 
 function BookingPage() {
-  const { pkg } = Route.useLoaderData() as { pkg: PackageDetail };
+  const { pkg } = Route.useLoaderData() as { pkg: FrontendPackage };
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -170,9 +175,14 @@ function BookingPage() {
       createdAt: new Date().toISOString(),
     };
     try {
-      await bookingService.create(booking);
+      await bookingService.create({
+        package: pkg._id,
+        bookingDate: startDate,
+        participants: travellers,
+        specialRequests: contact.notes,
+      });
     } catch {
-      /* API offline — booking still stored locally for the demo */
+      /* API offline or not logged in — booking still stored locally for the demo */
     }
     saveBooking(booking);
     setReference(ref);

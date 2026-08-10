@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+
+# Environment variables (secrets — NEVER commit)
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+server.log
+npm-debug.log*
+
+# Uploads
+uploads/
+public/uploads/
+
+# Build / cache
+dist/
+build/
+.cache/
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Test coverage
+coverage/

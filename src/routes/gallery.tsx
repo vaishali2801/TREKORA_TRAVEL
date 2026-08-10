@@ -1,9 +1,11 @@
 import { useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiCamera, FiChevronLeft, FiChevronRight, FiMapPin, FiX } from "react-icons/fi";
 import UserLayout from "@/layouts/UserLayout";
-import { GALLERY, GALLERY_CATEGORIES } from "@/data/events";
+import { GALLERY, type GalleryPhoto } from "@/data/events";
+import { galleryService, type FrontendGalleryPhoto } from "@/services/api";
 import { fadeUp, staggerContainer } from "@/utils/motion";
 
 export const Route = createFileRoute("/gallery")({
@@ -31,9 +33,23 @@ function GalleryPage() {
   const [category, setCategory] = useState<string>("All");
   const [index, setIndex] = useState<number | null>(null);
 
+  const { data } = useQuery({
+    queryKey: ["gallery"],
+    queryFn: () => galleryService.list(),
+    retry: false,
+  });
+
+  const source: FrontendGalleryPhoto[] =
+    data && data.length ? data : (GALLERY as unknown as FrontendGalleryPhoto[]);
+
+  const categories = useMemo(
+    () => ["All", ...Array.from(new Set(source.map((p) => p.category)))],
+    [source],
+  );
+
   const photos = useMemo(
-    () => (category === "All" ? GALLERY : GALLERY.filter((p) => p.category === category)),
-    [category],
+    () => (category === "All" ? source : source.filter((p) => p.category === category)),
+    [source, category],
   );
 
   const open = index !== null ? photos[index] : null;
@@ -61,7 +77,7 @@ function GalleryPage() {
       <section className="py-16">
         <div className="container-tp">
           <div className="flex flex-wrap justify-center gap-3">
-            {["All", ...GALLERY_CATEGORIES].map((c) => (
+            {categories.map((c) => (
               <button
                 key={c}
                 type="button"

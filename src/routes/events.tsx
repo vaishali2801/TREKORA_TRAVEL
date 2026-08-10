@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
@@ -7,7 +8,8 @@ import UserLayout from "@/layouts/UserLayout";
 import SectionHeading from "@/components/home/SectionHeading";
 import { Button } from "@/components/common/Button";
 import { TextField } from "@/components/common/TextField";
-import { EVENTS, EVENT_CATEGORIES, type EventItem } from "@/data/events";
+import { EVENTS } from "@/data/events";
+import { eventService, type FrontendEvent } from "@/services/api";
 import { fadeUp, staggerContainer } from "@/utils/motion";
 
 export const Route = createFileRoute("/events")({
@@ -35,11 +37,25 @@ const inr = (n: number) => `₹${n.toLocaleString("en-IN")}`;
 
 function EventsPage() {
   const [category, setCategory] = useState<string>("All");
-  const [active, setActive] = useState<EventItem | null>(null);
+  const [active, setActive] = useState<FrontendEvent | null>(null);
+
+  const { data } = useQuery({
+    queryKey: ["events", "all"],
+    queryFn: () => eventService.list(),
+    retry: false,
+  });
+
+  const source: FrontendEvent[] = data && data.length ? data : (EVENTS as unknown as FrontendEvent[]);
+  const fromApi = Boolean(data && data.length);
+
+  const categories = useMemo(
+    () => ["All", ...Array.from(new Set(source.map((e) => e.category)))],
+    [source],
+  );
 
   const list = useMemo(
-    () => (category === "All" ? EVENTS : EVENTS.filter((e) => e.category === category)),
-    [category],
+    () => (category === "All" ? source : source.filter((e) => e.category === category)),
+    [source, category],
   );
 
   return (
@@ -62,7 +78,7 @@ function EventsPage() {
       <section className="py-16">
         <div className="container-tp">
           <div className="flex flex-wrap justify-center gap-3">
-            {["All", ...EVENT_CATEGORIES].map((c) => (
+            {categories.map((c) => (
               <button
                 key={c}
                 type="button"
@@ -206,7 +222,7 @@ function EventsPage() {
   );
 }
 
-function RegisterModal({ event, onClose }: { event: EventItem; onClose: () => void }) {
+function RegisterModal({ event, onClose }: { event: FrontendEvent; onClose: () => void }) {
   const [form, setForm] = useState({ name: "", email: "", seats: "1" });
   const [errors, setErrors] = useState<{ name?: string; email?: string; seats?: string }>({});
 

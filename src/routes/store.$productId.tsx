@@ -13,16 +13,42 @@ import {
 } from "react-icons/fi";
 import UserLayout from "@/layouts/UserLayout";
 import GearCard from "@/components/store/GearCard";
-import { GEAR_PRODUCTS, getGearById, type GearProduct } from "@/data/gear";
+import { GEAR_PRODUCTS, getGearById } from "@/data/gear";
+import { productService, type FrontendProduct } from "@/services/api";
 import { useCart } from "@/context/CartContext";
 
 const inr = (n: number) => `₹${n.toLocaleString("en-IN")}`;
 
 export const Route = createFileRoute("/store/$productId")({
-  loader: ({ params }): { product: GearProduct } => {
-    const product = getGearById(params.productId);
-    if (!product) throw notFound();
-    return { product };
+  loader: async ({ params }): Promise<{ product: FrontendProduct; related: FrontendProduct[] }> => {
+    try {
+      const fetched = await productService.detail(params.productId);
+      let related: FrontendProduct[] = [];
+      try {
+        const all = await productService.list();
+        related = all
+          .filter((p) => p._id !== params.productId && p.category === fetched.category)
+          .concat(
+            all.filter((p) => p._id !== params.productId && p.category !== fetched.category),
+          )
+          .slice(0, 3);
+      } catch {
+        related = [];
+      }
+      return { product: fetched, related };
+    } catch {
+      const product = getGearById(params.productId);
+      if (!product) throw notFound();
+      const mock = product as unknown as FrontendProduct;
+      const related = (
+        GEAR_PRODUCTS.filter((p) => p._id !== product._id && p.category === product.category)
+          .concat(
+            GEAR_PRODUCTS.filter((p) => p._id !== product._id && p.category !== product.category),
+          )
+          .slice(0, 3) as unknown[]
+      ) as FrontendProduct[];
+      return { product: mock, related };
+    }
   },
   head: ({ loaderData }) => {
     if (!loaderData) {
@@ -46,7 +72,10 @@ export const Route = createFileRoute("/store/$productId")({
 });
 
 function ProductPage() {
-  const { product } = Route.useLoaderData() as { product: GearProduct };
+  const { product, related } = Route.useLoaderData() as {
+    product: FrontendProduct;
+    related: FrontendProduct[];
+  };
   const { addItem } = useCart();
   const rentable = typeof product.rentPerDay === "number";
   const [mode, setMode] = useState<"buy" | "rent">("buy");
@@ -56,12 +85,6 @@ function ProductPage() {
 
   const unit = mode === "rent" ? product.rentPerDay! * days : product.price;
   const total = unit * qty;
-
-  const related = GEAR_PRODUCTS.filter(
-    (p) => p._id !== product._id && p.category === product.category,
-  )
-    .concat(GEAR_PRODUCTS.filter((p) => p._id !== product._id && p.category !== product.category))
-    .slice(0, 3);
 
   const add = () => {
     addItem(
