@@ -1,8 +1,9 @@
 import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
-import { FiShoppingCart, FiStar } from "react-icons/fi";
+import { FiHeart, FiShoppingCart, FiStar } from "react-icons/fi";
 import type { GearProduct } from "@/data/gear";
 import { useCart } from "@/context/CartContext";
+import { useWishlist } from "@/context/WishlistContext";
 
 const inr = (n: number) => `₹${n.toLocaleString("en-IN")}`;
 
