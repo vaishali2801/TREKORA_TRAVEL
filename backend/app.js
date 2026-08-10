@@ -41,7 +41,7 @@ app.use(cookieParser());
 app.use(hpp()); // protects against HTTP Parameter Pollution (?price=1&price=2)
 
 // Global rate limit: 500 requests / 15 min per IP
-app.use("/api/v1", apiLimiter);
+app.use("/", apiLimiter);
 
 // Ensure req.body always exists (undefined when no JSON content-type is sent)
 app.use((req, res, next) => {
