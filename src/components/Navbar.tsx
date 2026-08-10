@@ -37,6 +37,7 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
   const { count } = useCart();
+  const { count: wishlistCount } = useWishlist();
   const { theme, toggleTheme } = useTheme();
   const { isAuthenticated, user } = useAuth();
 
