@@ -122,7 +122,7 @@ function Page() {
                               addItem({
                                 id: item.id,
                                 name: item.name,
-                                image: item.image,
+                                image: item.image ?? "",
                                 price: item.price,
                                 mode: "buy",
                               });
