@@ -10,7 +10,8 @@ export const Route = createFileRoute("/contact")({
       { title: "Contact — TrekVista Tours & Treks" },
       {
         name: "description",
-        content: "Get in touch with TrekVista for package recommendations, custom trips and booking support.",
+        content:
+          "Get in touch with TrekVista for package recommendations, custom trips and booking support.",
       },
       { property: "og:title", content: "Contact — TrekVista Tours & Treks" },
       {
@@ -57,10 +58,12 @@ function ContactPage() {
           <span className="glass-dark inline-block rounded-full px-4 py-1.5 text-[11px] font-semibold tracking-[0.24em] uppercase">
             Contact Us
           </span>
-          <h1 className="mt-4 font-display text-4xl font-bold md:text-5xl">Let&apos;s plan your next adventure</h1>
+          <h1 className="mt-4 font-display text-4xl font-bold md:text-5xl">
+            Let&apos;s plan your next adventure
+          </h1>
           <p className="mx-auto mt-4 max-w-2xl opacity-90">
-            Share your travel goals and dates, and our experts will suggest the best trek or tour for
-            your group.
+            Share your travel goals and dates, and our experts will suggest the best trek or tour
+            for your group.
           </p>
         </div>
       </section>
@@ -69,13 +72,18 @@ function ContactPage() {
         <div className="container-tp grid gap-8 lg:grid-cols-[1fr_1.2fr]">
           <div className="grid gap-4">
             {CONTACT_CARDS.map(({ icon: Icon, title, detail, note }) => (
-              <article key={title} className="rounded-3xl border border-border bg-card p-5 shadow-card">
+              <article
+                key={title}
+                className="rounded-3xl border border-border bg-card p-5 shadow-card"
+              >
                 <div className="flex items-start gap-4">
                   <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/10 text-primary">
                     <Icon size={20} />
                   </span>
                   <div>
-                    <h2 className="font-heading text-base font-semibold text-foreground">{title}</h2>
+                    <h2 className="font-heading text-base font-semibold text-foreground">
+                      {title}
+                    </h2>
                     <p className="mt-1 text-sm font-medium text-foreground/90">{detail}</p>
                     <p className="mt-1 text-xs text-muted-foreground">{note}</p>
                   </div>
@@ -94,10 +102,16 @@ function ContactPage() {
               <TextField label="Full name" placeholder="Aarav Sharma" required />
               <TextField label="Email" type="email" placeholder="you@example.com" required />
               <TextField label="Phone" type="tel" placeholder="+91 98765 43210" />
-              <TextField label="Preferred destination" placeholder="Kedarkantha / Spiti / Kashmir..." />
+              <TextField
+                label="Preferred destination"
+                placeholder="Kedarkantha / Spiti / Kashmir..."
+              />
 
               <div>
-                <label htmlFor="contact-message" className="mb-1.5 block text-sm font-medium text-foreground">
+                <label
+                  htmlFor="contact-message"
+                  className="mb-1.5 block text-sm font-medium text-foreground"
+                >
                   Your message
                 </label>
                 <textarea

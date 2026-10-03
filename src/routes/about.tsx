@@ -9,7 +9,8 @@ export const Route = createFileRoute("/about")({
       { title: "About — TrekVista Tours & Treks" },
       {
         name: "description",
-        content: "Learn about TrekVista's mission, values and the team behind every unforgettable expedition.",
+        content:
+          "Learn about TrekVista's mission, values and the team behind every unforgettable expedition.",
       },
       { property: "og:title", content: "About — TrekVista Tours & Treks" },
       {
@@ -25,12 +26,14 @@ const VALUES = [
   {
     icon: FiShield,
     title: "Safety first",
-    description: "Certified trek leaders, high-altitude protocols and emergency-ready operations on every route.",
+    description:
+      "Certified trek leaders, high-altitude protocols and emergency-ready operations on every route.",
   },
   {
     icon: FiHeart,
     title: "Responsible travel",
-    description: "Leave-no-trace practices and partnerships with local communities at every destination.",
+    description:
+      "Leave-no-trace practices and partnerships with local communities at every destination.",
   },
   {
     icon: FiCompass,
@@ -68,10 +71,10 @@ function AboutPage() {
           <div>
             <h2 className="font-display text-3xl font-bold text-foreground">Our story</h2>
             <p className="mt-5 text-muted-foreground">
-              TrekVista began as a small guide-led initiative serving friends and families who wanted
-              thoughtfully planned Himalayan escapes. As word spread, we grew into a full-service
-              travel platform connecting trekkers to curated packages, expert support and premium
-              equipment.
+              TrekVista began as a small guide-led initiative serving friends and families who
+              wanted thoughtfully planned Himalayan escapes. As word spread, we grew into a
+              full-service travel platform connecting trekkers to curated packages, expert support
+              and premium equipment.
             </p>
             <p className="mt-4 text-muted-foreground">
               Today, our team works with local hosts, expedition leaders and logistics partners to
@@ -92,7 +95,10 @@ function AboutPage() {
 
           <div className="grid gap-4">
             {HIGHLIGHTS.map(({ icon: Icon, value, label }) => (
-              <article key={label} className="rounded-3xl border border-border bg-card p-6 shadow-card">
+              <article
+                key={label}
+                className="rounded-3xl border border-border bg-card p-6 shadow-card"
+              >
                 <div className="flex items-center gap-3">
                   <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/10 text-primary">
                     <Icon size={20} />
@@ -110,10 +116,15 @@ function AboutPage() {
 
       <section className="bg-muted/40 py-16 md:py-20">
         <div className="container-tp">
-          <h2 className="text-center font-display text-3xl font-bold text-foreground">What we stand for</h2>
+          <h2 className="text-center font-display text-3xl font-bold text-foreground">
+            What we stand for
+          </h2>
           <div className="mt-10 grid gap-6 md:grid-cols-3">
             {VALUES.map(({ icon: Icon, title, description }) => (
-              <article key={title} className="rounded-3xl border border-border bg-card p-6 shadow-card">
+              <article
+                key={title}
+                className="rounded-3xl border border-border bg-card p-6 shadow-card"
+              >
                 <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-secondary/15 text-secondary">
                   <Icon size={20} />
                 </span>
